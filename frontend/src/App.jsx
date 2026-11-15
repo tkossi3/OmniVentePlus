@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, BadgeCheck,
-  ChevronDown, ChevronLeft, ChevronRight, Heart,
-  Leaf, LogOut, MapPin, MessageCircle, Package, Plus, Search,
-  ShieldCheck, ShoppingBag, Sparkles, Store, X,
+  ChevronDown, ChevronLeft, ChevronRight, Heart, Home,
+  LogOut, MapPin, MessageCircle, Package, Plus, Search,
+  ShieldCheck, ShoppingBag, Sparkles, Store, UserRound, X,
 } from "lucide-react";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
@@ -41,6 +41,12 @@ async function request(path, options = {}) {
 const money = (value) => `${new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(Number(value))} FCFA`;
 const displayName = (person) => `${person.first_name} ${person.last_name}`;
 
+function OmniMark({ small = false }) {
+  return <span className={`brand-mark${small ? " small" : ""}`} aria-hidden="true">
+    <span className="brand-letters"><i>O</i><b>V</b></span><span className="brand-plus">+</span>
+  </span>;
+}
+
 function ProductArtwork({ product, large = false }) {
   const image = product.images?.[0];
   if (image?.url) {
@@ -60,6 +66,7 @@ function App() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Tout voir");
+  const [storeFilter, setStoreFilter] = useState("");
   const [view, setView] = useState("discover");
   const [modal, setModal] = useState(null);
   const [product, setProduct] = useState(null);
@@ -94,8 +101,24 @@ function App() {
   const visibleProducts = useMemo(() => products.filter((item) => {
     const matchesCategory = category === "Tout voir" || item.category.toLowerCase() === category.toLowerCase();
     const query = search.trim().toLowerCase();
-    return matchesCategory && (!query || `${item.name} ${item.description} ${item.category}`.toLowerCase().includes(query));
-  }), [category, products, search]);
+    const matchesStore = !storeFilter || item.seller.name === storeFilter;
+    return matchesCategory && matchesStore && (!query || `${item.name} ${item.description} ${item.category} ${item.seller.name}`.toLowerCase().includes(query));
+  }), [category, products, search, storeFilter]);
+  const stores = useMemo(() => {
+    const byName = new Map();
+    products.forEach((item) => {
+      const entry = byName.get(item.seller.name) || { name: item.seller.name, count: 0, image: null };
+      entry.count += 1;
+      entry.image = entry.image || item.images?.find((image) => image.url)?.url || null;
+      byName.set(item.seller.name, entry);
+    });
+    return Array.from(byName.values());
+  }, [products]);
+
+  function navigateTo(section) {
+    setView("discover");
+    window.setTimeout(() => document.getElementById(section)?.scrollIntoView({ behavior: "smooth" }), 0);
+  }
 
   function signOut() {
     localStorage.removeItem(TOKEN_KEY);
@@ -124,13 +147,18 @@ function App() {
 
   return (
     <div className="app-shell">
-      <div className="announcement"><Sparkles size={14} /> Les belles trouvailles commencent ici <span>·</span> Fait avec cœur à Lomé</div>
+      <div className="announcement"><Sparkles size={14} /> Vendre plus aisément <span>·</span> Découvrir les boutiques près de chez vous</div>
       <header className="site-header">
         <button className="brand" onClick={() => setView("discover")} aria-label="Retour à l’accueil">
-          <span className="brand-mark"><Leaf size={21} strokeWidth={2.2} /></span>
-          <span>omni<span className="brand-accent">vente</span><small>LE MARCHÉ, TOUT PRÈS.</small></span>
+          <OmniMark />
+          <span>OmniVente<span className="brand-accent">+</span><small>VENDRE PLUS AISÉMENT</small></span>
         </button>
-        <div className="header-search"><Search size={17} /><input value={search} onChange={(event) => { setSearch(event.target.value); setView("discover"); }} placeholder="Un petit trésor en tête ?" aria-label="Rechercher un produit" /><kbd>⌘ K</kbd></div>
+        <div className="header-search"><Search size={17} /><input value={search} onChange={(event) => { setSearch(event.target.value); setView("discover"); }} placeholder="Rechercher un produit ou une boutique" aria-label="Rechercher un produit ou une boutique" /><kbd>⌘ K</kbd></div>
+        <nav className="main-nav" aria-label="Navigation principale">
+          <button className={view === "discover" ? "selected" : ""} onClick={() => setView("discover")}>Accueil</button>
+          <button onClick={() => navigateTo("catalogue")}>Produits</button>
+          <button onClick={() => navigateTo("boutiques")}>Boutiques</button>
+        </nav>
         <nav className="header-actions">
           {user && <button className={`text-nav${view === "messages" ? " selected" : ""}`} onClick={() => { setView("messages"); setModal({ type: "messages" }); }}><MessageCircle size={17} /><span>Messages</span></button>}
           {user?.role === "seller" && <button className={`text-nav${view === "seller" ? " selected" : ""}`} onClick={() => setView("seller")}><Store size={17} /><span>Ma boutique</span></button>}
@@ -149,26 +177,36 @@ function App() {
         <main>
           <section className="hero">
             <div className="hero-copy">
-              <div className="eyebrow"><span className="eyebrow-dot" /> DES CRÉATEURS, DES HISTOIRES, DES TROUVAILLES</div>
-              <h1>Le bon produit.<br /><em>La bonne personne.</em></h1>
-              <p>Un marché vivant, tout près de vous. Découvrez les produits des vendeurs locaux et échangez directement avec eux.</p>
-              <div className="hero-actions"><button className="button button-dark" onClick={() => document.getElementById("catalogue")?.scrollIntoView({ behavior: "smooth" })}>Explorer le marché <ArrowRight size={17} /></button><button className="button button-light" onClick={() => user?.role === "seller" ? setView("seller") : setModal({ type: "auth", mode: "register", role: "seller" })}>Vendre sur OmniVente <Plus size={16} /></button></div>
-              <div className="hero-proof"><div className="proof-avatars"><span>A</span><span>K</span><span>M</span><span>+</span></div><div><strong>Le commerce local, en confiance.</strong><small>Des échanges directs. Des histoires vraies.</small></div></div>
+              <div className="eyebrow"><span className="eyebrow-dot" /> LE MARCHÉ LOCAL, SOUS UN AUTRE ANGLE</div>
+              <h1>La vente,<br /><em>plus simplement.</em></h1>
+              <p>Découvrez les boutiques près de chez vous, commandez en toute simplicité et échangez directement avec les vendeurs. Le paiement se fait à la livraison.</p>
+              <div className="hero-actions"><button className="button button-dark" onClick={() => navigateTo("catalogue")}>Explorer le marché <ArrowRight size={17} /></button><button className="button button-light" onClick={() => user?.role === "seller" ? setView("seller") : setModal({ type: "auth", mode: "register", role: "seller" })}>Vendre sur OmniVente+ <Plus size={16} /></button></div>
+              <div className="hero-proof"><div className="proof-avatars"><span>A</span><span>K</span><span>M</span><span>+</span></div><div><strong>Des boutiques d’ici, à portée de clic.</strong><small>Commande simple · Paiement à la livraison</small></div></div>
             </div>
             <div className="hero-art" aria-label="Illustration de produits et de fleurs">
               <div className="hero-sun" /><div className="hero-shape shape-back" /><div className="hero-shape shape-front" />
-              <div className="hero-bag"><div className="bag-handle" /><span>OV</span></div><div className="hero-leaf leaf-a">✳</div><div className="hero-leaf leaf-b">✳</div>
-              <div className="floating-note"><span className="note-icon"><Heart size={16} fill="currentColor" /></span><span><b>Petites marques.</b><small>Grandes idées.</small></span></div>
-              <span className="hero-edition">ÉDITION Nº 01 · LOMÉ</span>
+              <div className="hero-bag"><div className="bag-handle" /><span>OV<span>+</span></span></div><div className="hero-leaf leaf-a">✳</div><div className="hero-leaf leaf-b">✳</div>
+              <div className="floating-note"><span className="note-icon"><Heart size={16} fill="currentColor" /></span><span><b>OmniVente+</b><small>Vendre plus aisément.</small></span></div>
+              <span className="hero-edition">LOMÉ · TOGO</span>
             </div>
           </section>
 
           <section className="catalog-section" id="catalogue">
             <div className="section-heading"><div><div className="eyebrow">LE COIN DES PÉPITES</div><h2>À découvrir <span>maintenant</span></h2></div><div className="catalog-count">{visibleProducts.length.toString().padStart(2, "0")} produits <ArrowDownRight size={16} /></div></div>
+            <label className="mobile-search"><Search size={16} /><input value={search} onChange={(event) => { setSearch(event.target.value); setStoreFilter(""); }} placeholder="Un produit, une boutique…" aria-label="Rechercher" /></label>
+            {storeFilter && <div className="active-store-filter">Boutique : <strong>{storeFilter}</strong><button onClick={() => setStoreFilter("")}>Tout voir <X size={13} /></button></div>}
             <div className="category-row">{CATEGORIES.map((item) => <button key={item} className={`category-pill${category === item ? " active" : ""}`} onClick={() => setCategory(item)}>{item}</button>)}</div>
             {loading ? <div className="empty-state"><span className="loader" />On prépare les belles choses…</div> : visibleProducts.length ? (
               <div className="product-grid">{visibleProducts.map((item, index) => <ProductCard key={item.id} product={item} index={index} onClick={() => { setProduct(item); setModal({ type: "product" }); }} />)}</div>
             ) : <div className="empty-state empty-card"><span className="empty-icon"><Package size={22} /></span><h3>Les étagères se remplissent.</h3><p>Il n’y a pas encore de produit dans cette catégorie. Revenez bientôt découvrir les prochaines pépites.</p>{user?.role === "seller" && <button className="button button-dark" onClick={() => setView("seller")}>Ajouter un produit <Plus size={16} /></button>}</div>}
+          </section>
+
+          <section className="stores-section" id="boutiques">
+            <div className="section-heading"><div><div className="eyebrow">LES GENS DERRIÈRE LES PRODUITS</div><h2>Nos <span>boutiques</span></h2></div><button className="text-button" onClick={() => user?.role === "seller" ? setView("seller") : setModal({ type: "auth", mode: "register", role: "seller" })}>{user?.role === "seller" ? "Mon espace vendeur" : "Ouvrir ma boutique"} <ArrowRight size={15} /></button></div>
+            {stores.length ? <div className="store-grid">{stores.slice(0, 6).map((shop) => <button className="store-card" key={shop.name} onClick={() => { setCategory("Tout voir"); setStoreFilter(shop.name); navigateTo("catalogue"); }}>
+              <span className="store-cover">{shop.image ? <img src={shop.image} alt="" /> : <span className="store-cover-pattern" />}<span className="store-cover-mark">OV<span>+</span></span></span>
+              <span className="store-card-info"><span className="store-avatar">{shop.name.slice(0, 1).toUpperCase()}</span><span className="store-card-name"><b>{shop.name}</b><small>{shop.count} produit{shop.count > 1 ? "s" : ""} en vitrine</small></span><ArrowUpRight size={17} /></span>
+            </button>)}</div> : <div className="stores-empty"><Store size={22} /><span><b>Les boutiques se préparent.</b><small>Les vendeurs locaux seront bientôt à découvrir ici.</small></span></div>}
           </section>
 
           <section className="seller-banner"><div className="seller-banner-icon"><Store size={22} /></div><div><span className="eyebrow">VOUS AVEZ QUELQUE CHOSE À PARTAGER ?</span><h2>Votre boutique mérite<br />d’être découverte.</h2><p>Créez votre espace, racontez vos produits, échangez avec vos clients.</p><button className="button button-dark" onClick={() => user?.role === "seller" ? setView("seller") : setModal({ type: "auth", mode: "register", role: "seller" })}>Ouvrir mon espace vendeur <ArrowRight size={16} /></button></div><span className="banner-sparkle sparkle-one">✳</span><span className="banner-sparkle sparkle-two">✳</span></section>
@@ -180,12 +218,19 @@ function App() {
       {view === "messages" && user && <MessagesView user={user} onClose={() => setView("discover")} initialConversationId={modal?.conversationId} />}
       {view === "admin" && user?.role === "admin" && <AdminDashboard notify={notify} />}
 
-      <footer className="site-footer"><span className="footer-brand"><span className="brand-mark small"><Leaf size={16} /></span> omni<span className="brand-accent">vente</span></span><span>Le commerce local, plus proche que jamais.</span><span>© OmniVente · Lomé, Togo</span></footer>
+      <footer className="site-footer"><span className="footer-brand"><OmniMark small /> OmniVente<span className="brand-accent">+</span></span><span>Le commerce local, sous un autre angle.</span><span>© OmniVente+ · Lomé, Togo</span></footer>
 
       {modal?.type === "auth" && <AuthModal mode={modal.mode} role={modal.role} onClose={() => setModal(null)} onAuth={(account) => { localStorage.setItem(TOKEN_KEY, account.access_token); setUser(account.user); setModal(null); setView(account.user.role === "seller" ? "seller" : account.user.role === "admin" ? "admin" : "discover"); notify(`Bienvenue, ${account.user.first_name} !`); }} />}
       {modal?.type === "product" && product && <ProductModal product={product} user={user} onClose={() => setModal(null)} onContact={() => contactSeller(product)} onOrder={() => { if (!user) { setModal({ type: "auth", mode: "register" }); return; } setModal({ type: "order", product }); }} />}
       {modal?.type === "order" && <OrderModal product={modal.product} user={user} onClose={() => setModal(null)} onSuccess={(reference) => { setModal(null); setView("orders"); notify(`Commande ${reference} envoyée au vendeur.`); }} />}
       {modal?.type === "account" && <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && setModal(null)}><div className="account-menu"><button className="modal-close" onClick={() => setModal(null)} aria-label="Fermer"><X size={18} /></button><span className="avatar large-avatar">{user?.first_name?.slice(0, 1)}</span><h3>{user && displayName(user)}</h3><p>{user?.email}</p><span className="account-role">{user?.role === "seller" ? "Vendeur·se" : user?.role === "admin" ? "Administration" : "Client·e"}</span>{user?.role === "buyer" && <button className="menu-link" onClick={() => { setModal(null); openOrders(); }}><ShoppingBag size={16} />Mes commandes</button>}{user?.role === "seller" && <button className="menu-link" onClick={() => { setModal(null); setView("seller"); }}><Store size={16} />Ma boutique</button>}<button className="menu-link danger-link" onClick={signOut}><LogOut size={16} />Se déconnecter</button></div></div>}
+      <nav className="mobile-nav" aria-label="Navigation mobile">
+        <button className={view === "discover" ? "active" : ""} onClick={() => setView("discover")}><Home size={19} /><span>Accueil</span></button>
+        <button onClick={() => navigateTo("catalogue")}><Package size={19} /><span>Produits</span></button>
+        <button className="mobile-nav-plus" aria-label="Mes commandes" onClick={openOrders}><Plus size={23} /></button>
+        <button onClick={() => navigateTo("boutiques")}><Store size={19} /><span>Boutiques</span></button>
+        <button onClick={() => user ? setModal({ type: "account" }) : setModal({ type: "auth", mode: "login" })}><UserRound size={19} /><span>Profil</span></button>
+      </nav>
       {toast && <div className="toast"><BadgeCheck size={17} />{toast}</div>}
     </div>
   );
