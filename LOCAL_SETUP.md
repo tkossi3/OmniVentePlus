@@ -1,4 +1,4 @@
-# Démarrage local OmniVente (Windows)
+# Démarrage local OmniVente+ (Windows)
 
 ## Prérequis
 

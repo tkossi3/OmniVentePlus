@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, BadgeCheck,
-  ChevronDown, ChevronLeft, ChevronRight, Heart, Home,
+  ChevronDown, ChevronLeft, ChevronRight, Footprints, Heart, Home,
   LogOut, MapPin, MessageCircle, Package, Plus, Search,
-  ShieldCheck, ShoppingBag, Sparkles, Store, UserRound, X,
+  ShieldCheck, Shirt, ShoppingBag, Sparkles, Store, UserRound, X,
 } from "lucide-react";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
@@ -169,7 +169,7 @@ function App() {
             <div className="account-wrap">
               <button className="account-button" onClick={() => setModal({ type: "account" })}><span className="avatar">{user.first_name?.slice(0, 1)}</span><span className="account-name">{user.first_name}</span><ChevronDown size={14} /></button>
             </div>
-          ) : <button className="button button-dark sign-in" onClick={() => setModal({ type: "auth", mode: "login" })}>Se connecter <ArrowUpRight size={16} /></button>}
+          ) : <button className="button button-dark sign-in" aria-label="Se connecter" onClick={() => setModal({ type: "auth", mode: "login" })}><UserRound size={16} /><span>Se connecter</span><ArrowUpRight size={16} /></button>}
         </nav>
       </header>
 
@@ -177,27 +177,37 @@ function App() {
         <main>
           <section className="hero">
             <div className="hero-copy">
-              <div className="eyebrow"><span className="eyebrow-dot" /> LE MARCHÉ LOCAL, SOUS UN AUTRE ANGLE</div>
-              <h1>La vente,<br /><em>plus simplement.</em></h1>
-              <p>Découvrez les boutiques près de chez vous, commandez en toute simplicité et échangez directement avec les vendeurs. Le paiement se fait à la livraison.</p>
+              <div className="eyebrow"><span className="eyebrow-dot" /> BIENVENUE SUR OMNIVENTE+</div>
+              <h1>Achetez local.<br /><em>Vendez plus.</em></h1>
+              <p>Les bonnes boutiques, les bons produits, près de vous. Découvrez le marché local, commandez en quelques gestes et payez à la livraison.</p>
               <div className="hero-actions"><button className="button button-dark" onClick={() => navigateTo("catalogue")}>Explorer le marché <ArrowRight size={17} /></button><button className="button button-light" onClick={() => user?.role === "seller" ? setView("seller") : setModal({ type: "auth", mode: "register", role: "seller" })}>Vendre sur OmniVente+ <Plus size={16} /></button></div>
-              <div className="hero-proof"><div className="proof-avatars"><span>A</span><span>K</span><span>M</span><span>+</span></div><div><strong>Des boutiques d’ici, à portée de clic.</strong><small>Commande simple · Paiement à la livraison</small></div></div>
+              <div className="hero-proof"><div className="proof-avatars"><span>A</span><span>K</span><span>M</span><span>+</span></div><div><strong>Le commerce local, à portée de clic.</strong><small>Directement auprès des vendeurs</small></div></div>
             </div>
-            <div className="hero-art" aria-label="Illustration de produits et de fleurs">
+            <div className="hero-art" aria-label="Illustration de produits : sac, vêtement et chaussures">
+              <div className="hero-grid-pattern" />
+              <span className="hero-product hero-shoes"><Footprints size={42} strokeWidth={1.2} /></span>
+              <span className="hero-product hero-shirt"><Shirt size={50} strokeWidth={1.1} /></span>
+              <span className="hero-product hero-parcel"><Package size={36} strokeWidth={1.2} /></span>
               <div className="hero-sun" /><div className="hero-shape shape-back" /><div className="hero-shape shape-front" />
-              <div className="hero-bag"><div className="bag-handle" /><span>OV<span>+</span></span></div><div className="hero-leaf leaf-a">✳</div><div className="hero-leaf leaf-b">✳</div>
-              <div className="floating-note"><span className="note-icon"><Heart size={16} fill="currentColor" /></span><span><b>OmniVente+</b><small>Vendre plus aisément.</small></span></div>
+              <div className="hero-bag"><div className="bag-handle" /><span>OV<span>+</span></span></div>
+              <div className="floating-note"><span className="note-icon"><Heart size={16} fill="currentColor" /></span><span><b>Le choix est chez vous.</b><small>Le paiement, à la livraison.</small></span></div>
               <span className="hero-edition">LOMÉ · TOGO</span>
             </div>
           </section>
 
+          <section className="benefits-strip" aria-label="Les avantages OmniVente+">
+            <div><span className="benefit-number">01</span><span><b>Des vendeurs près de vous</b><small>Explorez les boutiques locales</small></span></div>
+            <div><span className="benefit-number">02</span><span><b>Un contact direct</b><small>Échangez avec chaque vendeur</small></span></div>
+            <div><span className="benefit-number">03</span><span><b>Paiement à la livraison</b><small>Payez quand vous recevez</small></span></div>
+          </section>
+
           <section className="catalog-section" id="catalogue">
-            <div className="section-heading"><div><div className="eyebrow">LE COIN DES PÉPITES</div><h2>À découvrir <span>maintenant</span></h2></div><div className="catalog-count">{visibleProducts.length.toString().padStart(2, "0")} produits <ArrowDownRight size={16} /></div></div>
+            <div className="section-heading"><div><div className="eyebrow">LE MARCHÉ EN LIGNE</div><h2>Les produits <span>à découvrir</span></h2></div><div className="catalog-count">{visibleProducts.length.toString().padStart(2, "0")} produits <ArrowDownRight size={16} /></div></div>
             <label className="mobile-search"><Search size={16} /><input value={search} onChange={(event) => { setSearch(event.target.value); setStoreFilter(""); }} placeholder="Un produit, une boutique…" aria-label="Rechercher" /></label>
             {storeFilter && <div className="active-store-filter">Boutique : <strong>{storeFilter}</strong><button onClick={() => setStoreFilter("")}>Tout voir <X size={13} /></button></div>}
             <div className="category-row">{CATEGORIES.map((item) => <button key={item} className={`category-pill${category === item ? " active" : ""}`} onClick={() => setCategory(item)}>{item}</button>)}</div>
             {loading ? <div className="empty-state"><span className="loader" />On prépare les belles choses…</div> : visibleProducts.length ? (
-              <div className="product-grid">{visibleProducts.map((item, index) => <ProductCard key={item.id} product={item} index={index} onClick={() => { setProduct(item); setModal({ type: "product" }); }} />)}</div>
+              <div className="product-grid">{visibleProducts.map((item, index) => <ProductCard key={item.id} product={item} index={index} onClick={() => { setProduct(item); setModal({ type: "product" }); }} onOrder={() => { if (!user) { setModal({ type: "auth", mode: "register" }); return; } setModal({ type: "order", product: item }); }} onContact={() => contactSeller(item)} />)}</div>
             ) : <div className="empty-state empty-card"><span className="empty-icon"><Package size={22} /></span><h3>Les étagères se remplissent.</h3><p>Il n’y a pas encore de produit dans cette catégorie. Revenez bientôt découvrir les prochaines pépites.</p>{user?.role === "seller" && <button className="button button-dark" onClick={() => setView("seller")}>Ajouter un produit <Plus size={16} /></button>}</div>}
           </section>
 
@@ -218,7 +228,14 @@ function App() {
       {view === "messages" && user && <MessagesView user={user} onClose={() => setView("discover")} initialConversationId={modal?.conversationId} />}
       {view === "admin" && user?.role === "admin" && <AdminDashboard notify={notify} />}
 
-      <footer className="site-footer"><span className="footer-brand"><OmniMark small /> OmniVente<span className="brand-accent">+</span></span><span>Le commerce local, sous un autre angle.</span><span>© OmniVente+ · Lomé, Togo</span></footer>
+      <footer className="site-footer">
+        <div className="footer-main">
+          <div className="footer-about"><span className="footer-brand"><OmniMark small /> OmniVente<span className="brand-accent">+</span></span><p>Le marché local, plus accessible. Découvrez des produits et boutiques près de vous.</p></div>
+          <div className="footer-links"><b>Découvrir</b><button onClick={() => setView("discover")}>Accueil</button><button onClick={() => navigateTo("catalogue")}>Produits</button><button onClick={() => navigateTo("boutiques")}>Boutiques</button></div>
+          <div className="footer-links"><b>Vendre</b><button onClick={() => user?.role === "seller" ? setView("seller") : setModal({ type: "auth", mode: "register", role: "seller" })}>Créer ma boutique</button><span>Paiement à la livraison</span></div>
+        </div>
+        <div className="footer-bottom"><span>© OmniVente+ · Lomé, Togo</span><span>Le commerce local, sous un autre angle.</span></div>
+      </footer>
 
       {modal?.type === "auth" && <AuthModal mode={modal.mode} role={modal.role} onClose={() => setModal(null)} onAuth={(account) => { localStorage.setItem(TOKEN_KEY, account.access_token); setUser(account.user); setModal(null); setView(account.user.role === "seller" ? "seller" : account.user.role === "admin" ? "admin" : "discover"); notify(`Bienvenue, ${account.user.first_name} !`); }} />}
       {modal?.type === "product" && product && <ProductModal product={product} user={user} onClose={() => setModal(null)} onContact={() => contactSeller(product)} onOrder={() => { if (!user) { setModal({ type: "auth", mode: "register" }); return; } setModal({ type: "order", product }); }} />}
@@ -236,12 +253,15 @@ function App() {
   );
 }
 
-function ProductCard({ product, index, onClick }) {
-  return <button className="product-card" onClick={onClick} style={{ "--card-delay": `${index * 55}ms` }}>
-    <div className="card-image"><ProductArtwork product={product} /><span className="card-tag">{product.category}</span><span className="card-arrow"><ArrowUpRight size={17} /></span></div>
-    <div className="card-info"><div><h3>{product.name}</h3><p>par {product.seller.name}</p></div><strong>{money(product.price)}</strong></div>
-    <div className="card-foot"><span><span className="stock-dot" />Disponible</span><span>Découvrir <ArrowRight size={13} /></span></div>
-  </button>;
+function ProductCard({ product, index, onClick, onOrder, onContact }) {
+  return <article className="product-card" style={{ "--card-delay": `${index * 55}ms` }}>
+    <button className="card-image" onClick={onClick} aria-label={`Voir ${product.name}`}>
+      <ProductArtwork product={product} /><span className="card-tag">{product.category}</span><span className="card-arrow"><ArrowUpRight size={17} /></span>
+    </button>
+    <div className="card-info"><div><button className="product-title" onClick={onClick}>{product.name}</button><p>par {product.seller.name}</p></div><strong>{money(product.price)}</strong></div>
+    <div className="card-foot"><span><span className="stock-dot" />Disponible</span><span>En stock : {product.stock}</span></div>
+    <div className="product-card-actions"><button className="button button-dark" onClick={onOrder}>Commander</button><button className="button button-light" onClick={onContact}><MessageCircle size={14} />Contacter</button></div>
+  </article>;
 }
 
 function AuthModal({ mode: initialMode, role: initialRole, onClose, onAuth }) {
@@ -270,7 +290,7 @@ function AuthModal({ mode: initialMode, role: initialRole, onClose, onAuth }) {
   }
 
   return <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-    <section className="auth-modal"><button className="modal-close" onClick={onClose} aria-label="Fermer"><X size={19} /></button><div className="auth-brand-mark"><Leaf size={21} /></div>
+    <section className="auth-modal"><button className="modal-close" onClick={onClose} aria-label="Fermer"><X size={19} /></button><div className="auth-brand-mark"><OmniMark /></div>
       <span className="eyebrow">{mode === "login" ? "RAVI·E DE VOUS REVOIR" : "BIENVENUE DANS LE MARCHÉ"}</span>
       <h2>{mode === "login" ? "On reprend ?" : role === "seller" ? "Votre boutique commence ici." : "Faisons connaissance."}</h2>
       <p>{mode === "login" ? "Connectez-vous pour retrouver vos échanges et commandes." : "Un compte, et vous voilà tout près des vendeurs."}</p>
