@@ -10,11 +10,11 @@ const API = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 const TOKEN_KEY = "omnivente.access_token";
 const CATEGORIES = ["Tout voir", "Mode", "Maison", "Beauté", "Artisanat", "Électronique"];
 const CATEGORY_ARTWORK = {
-  Mode: "photo-1529139574466-a303027c1d8f",
+  Mode: "photo-1515886657613-9f3515b0c78f",
   Maison: "photo-1490312278390-ab64016e0aa9",
-  Beauté: "photo-1571781926291-c477ebfd024b",
-  Artisanat: "photo-1452861530-40fdfb417a8e",
-  "Électronique": "photo-1519389950473-47ba0277781c",
+  Beauté: "photo-1493106641515-6b5631de4bb9",
+  Artisanat: "photo-1493106641515-6b5631de4bb9",
+  "Électronique": "photo-1490312278390-ab64016e0aa9",
 };
 const EDITORIAL_IMAGES = {
   fashion: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1100&q=85",
