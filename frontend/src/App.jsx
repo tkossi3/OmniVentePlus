@@ -1,14 +1,26 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, BadgeCheck,
-  ChevronDown, ChevronLeft, ChevronRight, Footprints, Heart, Home,
+  ChevronDown, ChevronLeft, ChevronRight, Home,
   LogOut, MapPin, MessageCircle, Package, Plus, Search,
-  ShieldCheck, Shirt, ShoppingBag, Sparkles, Store, UserRound, X,
+  ShieldCheck, ShoppingBag, Sparkles, Store, UserRound, X,
 } from "lucide-react";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 const TOKEN_KEY = "omnivente.access_token";
 const CATEGORIES = ["Tout voir", "Mode", "Maison", "Beauté", "Artisanat", "Électronique"];
+const CATEGORY_ARTWORK = {
+  Mode: "photo-1529139574466-a303027c1d8f",
+  Maison: "photo-1490312278390-ab64016e0aa9",
+  Beauté: "photo-1571781926291-c477ebfd024b",
+  Artisanat: "photo-1452861530-40fdfb417a8e",
+  "Électronique": "photo-1519389950473-47ba0277781c",
+};
+const EDITORIAL_IMAGES = {
+  fashion: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1100&q=85",
+  craft: "https://images.unsplash.com/photo-1493106641515-6b5631de4bb9?auto=format&fit=crop&w=600&q=80",
+  home: "https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?auto=format&fit=crop&w=600&q=80",
+};
 const ORDER_LABELS = {
   pending: "À confirmer", confirmed: "Confirmée", preparing: "En préparation",
   shipped: "Expédiée", completed: "Terminée", cancelled: "Annulée",
@@ -52,11 +64,11 @@ function ProductArtwork({ product, large = false }) {
   if (image?.url) {
     return <img className={`product-art${large ? " large" : ""}`} src={image.url} alt={image.alt_text || product.name} />;
   }
+  const artworkId = CATEGORY_ARTWORK[product.category] || "photo-1515886657613-9f3515b0c78f";
   return (
     <div className={`product-art art-placeholder${large ? " large" : ""}`}>
-      <span className="art-orbit orbit-one" /><span className="art-orbit orbit-two" />
-      <span className="art-mark">{product.category?.slice(0, 1).toUpperCase() || "O"}</span>
-      <span className="art-caption">{product.category || "Belle trouvaille"}</span>
+      <img src={`https://images.unsplash.com/${artworkId}?auto=format&fit=crop&w=${large ? 1000 : 700}&q=80`} alt={`Photo d’inspiration pour la catégorie ${product.category}`} loading="lazy" />
+      <span className="art-caption">Inspiration · {product.category || "Belle trouvaille"}</span>
     </div>
   );
 }
@@ -147,13 +159,13 @@ function App() {
 
   return (
     <div className="app-shell">
-      <div className="announcement"><Sparkles size={14} /> Vendre plus aisément <span>·</span> Découvrir les boutiques près de chez vous</div>
+      <div className="announcement"><Sparkles size={14} /> Les belles trouvailles sont tout près <span>·</span> Le marché local de Lomé</div>
       <header className="site-header">
         <button className="brand" onClick={() => setView("discover")} aria-label="Retour à l’accueil">
           <OmniMark />
-          <span>OmniVente<span className="brand-accent">+</span><small>VENDRE PLUS AISÉMENT</small></span>
+          <span>OmniVente<span className="brand-accent">+</span><small>LE MARCHÉ LOCAL</small></span>
         </button>
-        <div className="header-search"><Search size={17} /><input value={search} onChange={(event) => { setSearch(event.target.value); setView("discover"); }} placeholder="Rechercher un produit ou une boutique" aria-label="Rechercher un produit ou une boutique" /><kbd>⌘ K</kbd></div>
+        <div className="header-search"><Search size={17} /><input value={search} onChange={(event) => { setSearch(event.target.value); setView("discover"); }} placeholder="Que recherchez-vous ?" aria-label="Rechercher un produit ou une boutique" /></div>
         <nav className="main-nav" aria-label="Navigation principale">
           <button className={view === "discover" ? "selected" : ""} onClick={() => setView("discover")}>Accueil</button>
           <button onClick={() => navigateTo("catalogue")}>Produits</button>
@@ -177,28 +189,26 @@ function App() {
         <main>
           <section className="hero">
             <div className="hero-copy">
-              <div className="eyebrow"><span className="eyebrow-dot" /> BIENVENUE SUR OMNIVENTE+</div>
-              <h1>Achetez local.<br /><em>Vendez plus.</em></h1>
-              <p>Les bonnes boutiques, les bons produits, près de vous. Découvrez le marché local, commandez en quelques gestes et payez à la livraison.</p>
-              <div className="hero-actions"><button className="button button-dark" onClick={() => navigateTo("catalogue")}>Explorer le marché <ArrowRight size={17} /></button><button className="button button-light" onClick={() => user?.role === "seller" ? setView("seller") : setModal({ type: "auth", mode: "register", role: "seller" })}>Vendre sur OmniVente+ <Plus size={16} /></button></div>
-              <div className="hero-proof"><div className="proof-avatars"><span>A</span><span>K</span><span>M</span><span>+</span></div><div><strong>Le commerce local, à portée de clic.</strong><small>Directement auprès des vendeurs</small></div></div>
+              <div className="eyebrow"><span className="eyebrow-dot" /> LE MARCHÉ LOCAL, RÉINVENTÉ</div>
+              <h1>Les belles trouvailles<br /><em>sont tout près.</em></h1>
+              <p>Mode, maison, beauté, artisanat… découvrez les boutiques de Lomé, échangez directement avec les vendeurs et payez à la livraison.</p>
+              <div className="hero-actions"><button className="button button-dark" onClick={() => navigateTo("catalogue")}>Explorer les produits <ArrowRight size={17} /></button><button className="button button-light" onClick={() => user?.role === "seller" ? setView("seller") : setModal({ type: "auth", mode: "register", role: "seller" })}>Je suis vendeur·se <Plus size={16} /></button></div>
+              <div className="hero-proof"><span className="hero-proof-icon"><MapPin size={17} /></span><div><strong>Le commerce local, à portée de clic.</strong><small>Découvrez, échangez, commandez en toute simplicité.</small></div></div>
             </div>
-            <div className="hero-art" aria-label="Illustration de produits : sac, vêtement et chaussures">
-              <div className="hero-grid-pattern" />
-              <span className="hero-product hero-shoes"><Footprints size={42} strokeWidth={1.2} /></span>
-              <span className="hero-product hero-shirt"><Shirt size={50} strokeWidth={1.1} /></span>
-              <span className="hero-product hero-parcel"><Package size={36} strokeWidth={1.2} /></span>
-              <div className="hero-sun" /><div className="hero-shape shape-back" /><div className="hero-shape shape-front" />
-              <div className="hero-bag"><div className="bag-handle" /><span>OV<span>+</span></span></div>
-              <div className="floating-note"><span className="note-icon"><Heart size={16} fill="currentColor" /></span><span><b>Le choix est chez vous.</b><small>Le paiement, à la livraison.</small></span></div>
-              <span className="hero-edition">LOMÉ · TOGO</span>
+            <div className="hero-art" aria-label="Sélection de mode, artisanat et décoration proposés sur le marché local">
+              <div className="hero-photo-main"><img src={EDITORIAL_IMAGES.fashion} alt="Sélection de mode" fetchpriority="high" /><span className="hero-photo-caption">LE STYLE D’ICI, À PORTÉE DE MAIN</span></div>
+              <div className="hero-photo-stack">
+                <div className="hero-photo-small"><img src={EDITORIAL_IMAGES.craft} alt="Objets et savoir-faire artisanal" loading="lazy" /><span>FAIT AVEC SOIN</span></div>
+                <div className="hero-photo-small"><img src={EDITORIAL_IMAGES.home} alt="Décoration pour la maison" loading="lazy" /><span>LA MAISON, AUTREMENT</span></div>
+              </div>
+              <div className="hero-location"><span><MapPin size={15} /></span><div><b>Le meilleur du marché local</b><small>Lomé · Togo</small></div><ArrowUpRight size={17} /></div>
             </div>
           </section>
 
           <section className="benefits-strip" aria-label="Les avantages OmniVente+">
-            <div><span className="benefit-number">01</span><span><b>Des vendeurs près de vous</b><small>Explorez les boutiques locales</small></span></div>
-            <div><span className="benefit-number">02</span><span><b>Un contact direct</b><small>Échangez avec chaque vendeur</small></span></div>
-            <div><span className="benefit-number">03</span><span><b>Paiement à la livraison</b><small>Payez quand vous recevez</small></span></div>
+            <div><span className="benefit-number"><MapPin size={19} /></span><span><b>Des boutiques d’ici</b><small>Découvrez les vendeurs locaux</small></span></div>
+            <div><span className="benefit-number"><MessageCircle size={19} /></span><span><b>Un vrai contact</b><small>Échangez directement avec eux</small></span></div>
+            <div><span className="benefit-number"><ShoppingBag size={19} /></span><span><b>Payez à la réception</b><small>Le paiement, à la livraison</small></span></div>
           </section>
 
           <section className="catalog-section" id="catalogue">
