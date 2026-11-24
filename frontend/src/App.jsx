@@ -80,6 +80,8 @@ function App() {
   const [category, setCategory] = useState("Tout voir");
   const [storeFilter, setStoreFilter] = useState("");
   const [view, setView] = useState("discover");
+  const [mobilePage, setMobilePage] = useState("home");
+  const [activeSection, setActiveSection] = useState("home");
   const [modal, setModal] = useState(null);
   const [product, setProduct] = useState(null);
   const [toast, setToast] = useState("");
@@ -129,6 +131,18 @@ function App() {
 
   function navigateTo(section) {
     setView("discover");
+    setActiveSection(section);
+    if (section === "home") {
+      setMobilePage("home");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    if (window.matchMedia("(max-width: 760px)").matches) {
+      setMobilePage(section);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    setMobilePage("home");
     window.setTimeout(() => document.getElementById(section)?.scrollIntoView({ behavior: "smooth" }), 0);
   }
 
@@ -137,6 +151,8 @@ function App() {
     setUser(null);
     setModal(null);
     setView("discover");
+    setMobilePage("home");
+    setActiveSection("home");
     notify("Vous êtes déconnecté·e.");
   }
 
@@ -158,18 +174,18 @@ function App() {
   }
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-mobile-page={mobilePage}>
       <div className="announcement"><Sparkles size={14} /> Les belles trouvailles sont tout près <span>·</span> Le marché local de Lomé</div>
       <header className="site-header">
-        <button className="brand" onClick={() => setView("discover")} aria-label="Retour à l’accueil">
+        <button className="brand" onClick={() => navigateTo("home")} aria-label="Retour à l’accueil">
           <OmniMark />
           <span>OmniVente<span className="brand-accent">+</span><small>LE MARCHÉ LOCAL</small></span>
         </button>
         <div className="header-search"><Search size={17} /><input value={search} onChange={(event) => { setSearch(event.target.value); setView("discover"); }} placeholder="Que recherchez-vous ?" aria-label="Rechercher un produit ou une boutique" /></div>
         <nav className="main-nav" aria-label="Navigation principale">
-          <button className={view === "discover" ? "selected" : ""} onClick={() => setView("discover")}>Accueil</button>
-          <button onClick={() => navigateTo("catalogue")}>Produits</button>
-          <button onClick={() => navigateTo("boutiques")}>Boutiques</button>
+          <button className={activeSection === "home" ? "selected" : ""} aria-current={activeSection === "home" ? "page" : undefined} onClick={() => navigateTo("home")}>Accueil</button>
+          <button className={activeSection === "catalogue" ? "selected" : ""} aria-current={activeSection === "catalogue" ? "location" : undefined} onClick={() => navigateTo("catalogue")}>Produits</button>
+          <button className={activeSection === "boutiques" ? "selected" : ""} aria-current={activeSection === "boutiques" ? "location" : undefined} onClick={() => navigateTo("boutiques")}>Boutiques</button>
         </nav>
         <nav className="header-actions">
           {user && <button className={`text-nav${view === "messages" ? " selected" : ""}`} onClick={() => { setView("messages"); setModal({ type: "messages" }); }}><MessageCircle size={17} /><span>Messages</span></button>}
@@ -247,15 +263,15 @@ function App() {
         <div className="footer-bottom"><span>© OmniVente+ · Lomé, Togo</span><span>Le commerce local, sous un autre angle.</span></div>
       </footer>
 
-      {modal?.type === "auth" && <AuthModal mode={modal.mode} role={modal.role} onClose={() => setModal(null)} onAuth={(account) => { localStorage.setItem(TOKEN_KEY, account.access_token); setUser(account.user); setModal(null); setView(account.user.role === "seller" ? "seller" : account.user.role === "admin" ? "admin" : "discover"); notify(`Bienvenue, ${account.user.first_name} !`); }} />}
+      {modal?.type === "auth" && <AuthModal mode={modal.mode} role={modal.role} onClose={() => setModal(null)} onAuth={(account) => { localStorage.setItem(TOKEN_KEY, account.access_token); setUser(account.user); setModal(null); setView(account.user.role === "seller" ? "seller" : account.user.role === "admin" ? "admin" : "discover"); setMobilePage("home"); setActiveSection("home"); notify(`Bienvenue, ${account.user.first_name} !`); }} />}
       {modal?.type === "product" && product && <ProductModal product={product} user={user} onClose={() => setModal(null)} onContact={() => contactSeller(product)} onOrder={() => { if (!user) { setModal({ type: "auth", mode: "register" }); return; } setModal({ type: "order", product }); }} />}
       {modal?.type === "order" && <OrderModal product={modal.product} user={user} onClose={() => setModal(null)} onSuccess={(reference) => { setModal(null); setView("orders"); notify(`Commande ${reference} envoyée au vendeur.`); }} />}
       {modal?.type === "account" && <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && setModal(null)}><div className="account-menu"><button className="modal-close" onClick={() => setModal(null)} aria-label="Fermer"><X size={18} /></button><span className="avatar large-avatar">{user?.first_name?.slice(0, 1)}</span><h3>{user && displayName(user)}</h3><p>{user?.email}</p><span className="account-role">{user?.role === "seller" ? "Vendeur·se" : user?.role === "admin" ? "Administration" : "Client·e"}</span>{user?.role === "buyer" && <button className="menu-link" onClick={() => { setModal(null); openOrders(); }}><ShoppingBag size={16} />Mes commandes</button>}{user?.role === "seller" && <button className="menu-link" onClick={() => { setModal(null); setView("seller"); }}><Store size={16} />Ma boutique</button>}<button className="menu-link danger-link" onClick={signOut}><LogOut size={16} />Se déconnecter</button></div></div>}
       <nav className="mobile-nav" aria-label="Navigation mobile">
-        <button className={view === "discover" ? "active" : ""} onClick={() => setView("discover")}><Home size={19} /><span>Accueil</span></button>
-        <button onClick={() => navigateTo("catalogue")}><Package size={19} /><span>Produits</span></button>
+        <button className={view === "discover" && mobilePage === "home" ? "active" : ""} aria-current={view === "discover" && mobilePage === "home" ? "page" : undefined} onClick={() => navigateTo("home")}><Home size={19} /><span>Accueil</span></button>
+        <button className={view === "discover" && mobilePage === "catalogue" ? "active" : ""} aria-current={view === "discover" && mobilePage === "catalogue" ? "page" : undefined} onClick={() => navigateTo("catalogue")}><Package size={19} /><span>Produits</span></button>
         <button className="mobile-nav-plus" aria-label="Mes commandes" onClick={openOrders}><Plus size={23} /></button>
-        <button onClick={() => navigateTo("boutiques")}><Store size={19} /><span>Boutiques</span></button>
+        <button className={view === "discover" && mobilePage === "boutiques" ? "active" : ""} aria-current={view === "discover" && mobilePage === "boutiques" ? "page" : undefined} onClick={() => navigateTo("boutiques")}><Store size={19} /><span>Boutiques</span></button>
         <button onClick={() => user ? setModal({ type: "account" }) : setModal({ type: "auth", mode: "login" })}><UserRound size={19} /><span>Profil</span></button>
       </nav>
       {toast && <div className="toast"><BadgeCheck size={17} />{toast}</div>}
@@ -300,7 +316,7 @@ function AuthModal({ mode: initialMode, role: initialRole, onClose, onAuth }) {
   }
 
   return <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-    <section className="auth-modal"><button className="modal-close" onClick={onClose} aria-label="Fermer"><X size={19} /></button><div className="auth-brand-mark"><OmniMark /></div>
+    <section className="auth-modal"><button className="modal-close" onClick={onClose} aria-label="Fermer"><X size={19} /></button><div className="auth-brand"><OmniMark /><span>OmniVente<span className="brand-accent">+</span><small>LE MARCHÉ LOCAL</small></span></div>
       <span className="eyebrow">{mode === "login" ? "RAVI·E DE VOUS REVOIR" : "BIENVENUE DANS LE MARCHÉ"}</span>
       <h2>{mode === "login" ? "On reprend ?" : role === "seller" ? "Votre boutique commence ici." : "Faisons connaissance."}</h2>
       <p>{mode === "login" ? "Connectez-vous pour retrouver vos échanges et commandes." : "Un compte, et vous voilà tout près des vendeurs."}</p>

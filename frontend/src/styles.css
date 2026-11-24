@@ -1,7 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap");
 
 :root {
-  font-family: "DM Sans", sans-serif;
+  font-family: "Manrope", sans-serif;
   color: #242a23;
   background: #f8f7f3;
   font-synthesis: none;
@@ -1018,4 +1018,158 @@ main { max-width: 1280px; padding: 0 40px; }
   .hero-actions .button { gap: 6px; padding: 0 10px; font-size: 8px; }
   .product-grid { grid-template-columns: 1fr; }
   .card-image { height: 240px; }
+}
+
+html { font-size: 16px; }
+body, button, input, textarea, select { font-family: "Manrope", sans-serif; }
+body { font-size: 15px; line-height: 1.55; }
+.announcement { font-size: 12px; }
+.brand { gap: 10px; font-size: 21px; letter-spacing: -.06em; }
+.brand small { font-size: 9px; }
+.main-nav button { font-size: 14px; }
+.text-nav, .account-button { font-size: 13px; }
+.sign-in { font-size: 12px; }
+.eyebrow { font-size: 11px; }
+.hero-copy > p { font-size: 16px; line-height: 1.75; }
+.hero-proof strong { font-size: 13px; }
+.hero-proof small { font-size: 11px; }
+.hero-photo-caption, .hero-photo-small > span { font-size: 10px; }
+.hero-location b { font-size: 12px; }
+.hero-location small { font-size: 11px; }
+.benefits-strip b { font-size: 14px; }
+.benefits-strip small { font-size: 12px; }
+.section-heading h2 { font-size: 42px; }
+.catalog-count { font-size: 13px; }
+.category-pill { padding: 11px 18px; font-size: 13px; }
+.card-info h3, .product-title { font-family: "Manrope", sans-serif; font-size: 15px; }
+.card-info p { font-size: 12px; }
+.card-info > strong { font-size: 14px; }
+.card-foot { font-size: 11px; }
+.card-tag { font-size: 11px; }
+.product-card-actions .button { min-height: 40px; font-size: 11px; }
+.store-card-name b { font-family: "Manrope", sans-serif; font-size: 14px; }
+.store-card-name small { font-size: 11px; }
+.text-button { font-size: 13px; }
+.seller-banner .eyebrow { font-size: 11px; }
+.seller-banner h2 { font-size: 38px; }
+.seller-banner p { font-size: 14px; }
+.footer-about p, .footer-links button, .footer-links span { font-size: 12px; }
+.footer-links b { font-size: 13px; }
+.footer-bottom { font-size: 11px; }
+.auth-modal, .order-modal { width: min(480px, 100%); max-height: 92vh; overflow-y: auto; padding: 40px; border-radius: 20px; }
+.auth-brand { display: flex; align-items: center; gap: 11px; margin: 0 0 26px; color: #172b20; font-size: 20px; font-weight: 800; letter-spacing: -.05em; }
+.auth-brand .brand-mark { width: 42px; height: 42px; }
+.auth-brand > span > small { display: block; margin-top: 2px; color: #7d8a80; font-size: 9px; font-weight: 700; letter-spacing: .13em; }
+.auth-modal h2, .order-modal h2 { font-size: 34px; line-height: 1.16; }
+.auth-modal > p, .order-modal > p { font-size: 14px; }
+.form-stack { gap: 15px; }
+.form-stack label, .seller-form label:not(.upload-field):not(.publish-option) { font-size: 13px; }
+.form-stack input, .seller-form input:not([type="checkbox"]):not([type="file"]), .seller-form textarea, .seller-form select { min-height: 48px; padding: 0 13px; font-size: 14px; }
+.form-stack label small { font-size: 12px; }
+.role-switch button { font-size: 12px; }
+.auth-switch { font-size: 13px; }
+.auth-privacy { font-size: 11px; line-height: 1.6; }
+.full-button { min-height: 48px; font-size: 13px; }
+
+@media (max-width: 1100px) and (min-width: 761px) {
+  .site-header { gap: 11px; }
+  .brand { min-width: 145px; }
+  .header-search { max-width: 230px; }
+  .main-nav { display: flex; flex: none; gap: 12px; }
+  .header-actions { gap: 10px; }
+  .main-nav button { font-size: 13px; }
+}
+
+@media (max-width: 760px) {
+  .app-shell { padding-bottom: calc(67px + env(safe-area-inset-bottom)); }
+  .site-header .brand { font-size: 17px; }
+  .brand small { display: none; }
+  .mobile-search { height: 46px; display: flex; align-items: center; gap: 9px; margin-top: 16px; padding: 0 12px; border: 1px solid #e3e5dc; border-radius: 24px; color: #82907f; background: #fff; }
+  .mobile-search input { min-width: 0; flex: 1; border: 0; outline: 0; color: var(--ink); background: transparent; font-size: 14px; }
+  .hero-copy > p { font-size: 15px; }
+  .hero-actions .button { min-height: 46px; padding: 0 14px; font-size: 12px; }
+  .hero-proof strong { font-size: 12px; }
+  .hero-proof small { font-size: 11px; }
+  .hero-photo-caption, .hero-photo-small > span { font-size: 8px; }
+  .hero-location b { font-size: 11px; }
+  .hero-location small { font-size: 10px; }
+  .benefits-strip b { font-size: 13px; }
+  .benefits-strip small { font-size: 11px; }
+  .section-heading h2 { font-size: 32px; }
+  .catalog-count { font-size: 11px; }
+  .category-pill { padding: 9px 13px; font-size: 12px; }
+  .mobile-search { min-height: 46px; }
+  .mobile-search input { font-size: 14px; }
+  .card-info h3, .product-title { font-size: 13px; }
+  .card-info p { font-size: 11px; }
+  .card-info > strong { font-size: 12px; }
+  .card-foot { font-size: 9px; }
+  .card-tag { font-size: 10px; }
+  .product-card-actions .button { min-height: 38px; font-size: 10px; }
+  .store-card-name b { font-size: 12px; }
+  .store-card-name small { font-size: 9px; }
+  .seller-banner h2 { font-size: 30px; }
+  .seller-banner p { font-size: 13px; }
+  .mobile-nav button span { font-size: 10px; }
+  .mobile-nav { height: calc(61px + env(safe-area-inset-bottom)); position: fixed; z-index: 8; right: 0; bottom: 0; left: 0; display: flex; align-items: center; justify-content: space-around; padding: 5px 10px env(safe-area-inset-bottom); border-top: 1px solid #e2e8e3; background: #ffffffed; box-shadow: 0 -7px 22px #243c2c0c; backdrop-filter: blur(14px); }
+  .mobile-nav button { min-width: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 3px 4px; border: 0; color: #858a80; background: transparent; }
+  .mobile-nav button.active { color: var(--green); }
+  .mobile-nav-plus { width: 43px; height: 43px; min-width: 43px; margin-top: -20px; border: 4px solid var(--paper); border-radius: 50%; color: #fff; background: var(--green); box-shadow: 0 4px 12px #284c3c35; }
+  .auth-modal, .order-modal { padding: 32px 24px 26px; }
+  .auth-modal h2, .order-modal h2 { font-size: 30px; }
+
+  .app-shell[data-mobile-page="home"] .catalog-section,
+  .app-shell[data-mobile-page="home"] .stores-section { display: none; }
+  .app-shell[data-mobile-page="catalogue"] .hero,
+  .app-shell[data-mobile-page="catalogue"] .benefits-strip,
+  .app-shell[data-mobile-page="catalogue"] .stores-section,
+  .app-shell[data-mobile-page="catalogue"] .seller-banner,
+  .app-shell[data-mobile-page="boutiques"] .hero,
+  .app-shell[data-mobile-page="boutiques"] .benefits-strip,
+  .app-shell[data-mobile-page="boutiques"] .catalog-section,
+  .app-shell[data-mobile-page="boutiques"] .seller-banner { display: none; }
+  .app-shell[data-mobile-page="catalogue"] .catalog-section,
+  .app-shell[data-mobile-page="boutiques"] .stores-section { padding-top: 28px; }
+}
+
+@media (max-width: 420px) {
+  .auth-modal, .order-modal { padding: 30px 20px 24px; }
+  .auth-modal h2, .order-modal h2 { font-size: 27px; }
+}
+
+body { font-size: 16px; }
+.hero-copy > p { font-size: 17px; }
+.hero-proof strong { font-size: 14px; }
+.hero-proof small { font-size: 12px; }
+.benefits-strip b { font-size: 15px; }
+.benefits-strip small { font-size: 13px; }
+.section-heading h2 { font-size: 44px; }
+.card-info h3, .product-title { font-size: 16px; }
+.card-info p { font-size: 13px; }
+.card-info > strong { font-size: 15px; }
+.card-foot { font-size: 12px; }
+.auth-modal h2, .order-modal h2 { font-size: 36px; }
+.auth-modal > p, .order-modal > p { font-size: 15px; }
+.form-stack label, .seller-form label:not(.upload-field):not(.publish-option) { font-size: 14px; }
+.form-stack input, .seller-form input:not([type="checkbox"]):not([type="file"]), .seller-form textarea, .seller-form select { min-height: 50px; font-size: 16px; }
+.form-stack label small { font-size: 13px; }
+.auth-switch { font-size: 14px; }
+.auth-privacy { font-size: 12px; }
+.full-button { font-size: 14px; }
+
+@media (max-width: 760px) {
+  .hero-copy > p { font-size: 16px; }
+  .benefits-strip b { font-size: 14px; }
+  .benefits-strip small { font-size: 12px; }
+  .section-heading h2 { font-size: 33px; }
+  .card-info h3, .product-title { font-size: 14px; }
+  .card-info p { font-size: 12px; }
+  .card-info > strong { font-size: 13px; }
+  .card-foot { font-size: 10px; }
+  .mobile-nav button span { font-size: 11px; }
+  .auth-modal h2, .order-modal h2 { font-size: 30px; }
+}
+
+@media (max-width: 420px) {
+  .auth-modal h2, .order-modal h2 { font-size: 28px; }
 }
