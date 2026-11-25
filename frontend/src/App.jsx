@@ -188,10 +188,10 @@ function App() {
           <button className={activeSection === "boutiques" ? "selected" : ""} aria-current={activeSection === "boutiques" ? "location" : undefined} onClick={() => navigateTo("boutiques")}>Boutiques</button>
         </nav>
         <nav className="header-actions">
-          {user && <button className={`text-nav${view === "messages" ? " selected" : ""}`} onClick={() => { setView("messages"); setModal({ type: "messages" }); }}><MessageCircle size={17} /><span>Messages</span></button>}
-          {user?.role === "seller" && <button className={`text-nav${view === "seller" ? " selected" : ""}`} onClick={() => setView("seller")}><Store size={17} /><span>Ma boutique</span></button>}
-          {user?.role === "admin" && <button className="text-nav" onClick={() => setView("admin")}><ShieldCheck size={17} /><span>Administration</span></button>}
-          {user && user.role !== "buyer" && <button className={`text-nav${view === "orders" ? " selected" : ""}`} onClick={openOrders}><ShoppingBag size={17} /><span>Commandes</span></button>}
+          {user && <button className={`text-nav${view === "messages" ? " selected" : ""}`} aria-label="Messages" onClick={() => { setView("messages"); setModal({ type: "messages" }); }}><MessageCircle size={17} /><span>Messages</span></button>}
+          {user?.role === "seller" && <button className={`text-nav${view === "seller" ? " selected" : ""}`} aria-label="Ma boutique" onClick={() => setView("seller")}><Store size={17} /><span>Ma boutique</span></button>}
+          {user?.role === "admin" && <button className="text-nav" aria-label="Administration" onClick={() => setView("admin")}><ShieldCheck size={17} /><span>Administration</span></button>}
+          {user && user.role !== "buyer" && <button className={`text-nav${view === "orders" ? " selected" : ""}`} aria-label="Commandes" onClick={openOrders}><ShoppingBag size={17} /><span>Commandes</span></button>}
           {user && user.role === "buyer" && <button className="icon-action" aria-label="Mes commandes" onClick={openOrders}><ShoppingBag size={19} /></button>}
           {user ? (
             <div className="account-wrap">
